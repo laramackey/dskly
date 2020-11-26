@@ -1,7 +1,6 @@
 <script>
   import Calendar from './Calendar.svelte';
   import Floorplan from './Floorplan.svelte';
-  import DatePicker from './DatePicker.svelte';
 </script>
 
 <style>

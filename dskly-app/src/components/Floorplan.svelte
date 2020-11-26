@@ -51,12 +51,11 @@ const getBookingsByDate = (response, date) => {
 }
 
 const getSeatAvailability = (seats, seatId) => {
-  return seats.find(s => s.id === seatId).seat;
+  const seat = seats.find(s => s.id === seatId);
+  return seat ? Object.keys(State)[seat.state].toLocaleLowerCase() : 'available';
 }
 
 const seats = getBookingsByDate(bookings, '2020-11-26');
-
-console.table(seats);
 
 </script>
 

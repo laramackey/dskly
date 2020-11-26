@@ -1,3 +1,14 @@
+<script>
+import { currentDate } from '../stores';
+
+let date_value;
+
+const date = currentDate.subscribe(value => {
+  date_value = value
+});
+
+</script>
+
 <style>
   .date {
     display:grid;
@@ -10,6 +21,6 @@
 
 <div class="date">
   <div class="left-arrow"></div>
-  <div>Today's date</div>
+  <div>{date_value}</div>
   <div class="right-arrow"></div>
 </div>
