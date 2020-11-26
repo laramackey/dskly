@@ -15,6 +15,7 @@ function amendDate(date, number) {
     height:50px;
     max-width:200px;
     align-self:center;
+    user-select:none;
   }
 
   .left-arrow {
