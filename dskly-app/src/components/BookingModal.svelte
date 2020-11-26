@@ -1,6 +1,9 @@
 <script>
 import { apiUrl } from '../stores';
 import Modal from './Modal.svelte';
+import { createEventDispatcher } from 'svelte';
+
+const dispatch = createEventDispatcher();
 
 export let open;
 export let chosenSeat;
@@ -19,13 +22,14 @@ const handleSubmit = async () => {
       $apiUrl + '/bookings',
       {
         method: 'POST',
-        // mode: 'no-cors',
         headers: {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify(data)
       }
     );
+
+    dispatch('close-modal');
 
   } catch (error){
     console.error(error);
