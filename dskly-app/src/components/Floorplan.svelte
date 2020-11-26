@@ -1,5 +1,11 @@
 <script>
 import Date from './Date.svelte';
+import BookingModal from './BookingModal.svelte';
+import {currentDate} from '../stores';
+
+let showBookingModal = false;
+let chosenSeat;
+let chosenDate;
 
 const State = {
   Available: 0,
@@ -45,6 +51,12 @@ const bookings = [
   }
 ];
 
+const handleToggleModal = (seatId, date) => {
+  showBookingModal = true;
+  chosenSeat = seatId;
+  chosenDate = date;
+}
+
 const getBookingsByDate = (response, date) => {
   const bookings = response.find(b => b.date === date);
   return bookings.seats;
@@ -56,7 +68,6 @@ const getSeatAvailability = (seats, seatId) => {
 }
 
 const seats = getBookingsByDate(bookings, '2020-11-26');
-
 </script>
 
 <style>
@@ -97,13 +108,14 @@ const seats = getBookingsByDate(bookings, '2020-11-26');
   <Date />
   <div class='office'>
     <svg xmlns="http://www.w3.org/2000/svg" width="185px" height="309px" fill="none" viewBox="0 0 185 309">
-      <circle cx="19" cy="257" r="16.5" class={getSeatAvailability(seats, 0)} />
-      <circle cx="19" cy="154" r="16.5" class={getSeatAvailability(seats, 1)} />
-      <circle cx="166" cy="154" r="16.5" class={getSeatAvailability(seats, 2)} />
-      <circle cx="166" cy="50" r="16.5" class={getSeatAvailability(seats, 3)} />
-      <circle cx="19" cy="50" r="16.5" class={getSeatAvailability(seats, 4)} />
-      <circle cx="166" cy="259" r="16.5" class={getSeatAvailability(seats, 5)} />
+      <circle cx="19" cy="257" r="16.5" class={getSeatAvailability(seats, 0)} on:click={() => handleToggleModal(0, $currentDate)} />
+      <circle cx="19" cy="154" r="16.5" class={getSeatAvailability(seats, 1)} on:click={() => handleToggleModal(1, $currentDate)} />
+      <circle cx="166" cy="154" r="16.5" class={getSeatAvailability(seats, 2)} on:click={() => handleToggleModal(2, $currentDate)} />
+      <circle cx="166" cy="50" r="16.5" class={getSeatAvailability(seats, 3)}  on:click={() => handleToggleModal(3, $currentDate)} />
+      <circle cx="19" cy="50" r="16.5" class={getSeatAvailability(seats, 4)} on:click={() => handleToggleModal(4, $currentDate)} />
+      <circle cx="166" cy="259" r="16.5" class={getSeatAvailability(seats, 5)} on:click={() => handleToggleModal(5, $currentDate)} />
       <path fill="#000" d="M42 208h101v101H42zM42 104h101v101H42zM42 0h101v101H42z"/>
     </svg>
   </div>
+  <BookingModal open={showBookingModal} {chosenSeat} {chosenDate} />
 </div>
