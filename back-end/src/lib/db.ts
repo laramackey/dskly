@@ -23,12 +23,13 @@ const getConnection = () => {
 
 const createDb = (db = getConnection()) => {
   return {
-    getBookings: async function getBookings(): Promise<any> {
+    getBookings: async function getBookings(date): Promise<any> {
       const query = `
                   SELECT seat_id as id, booking_name as name, booking_state as state
                   FROM bookings
-              `;
-      const result = await db.any(query);
+                  WHERE booking_date = $<date>;
+                  `;
+      const result = await db.any(query, {date});
       // tslint:disable-next-line: no-console
       console.log(result);
       return result;
