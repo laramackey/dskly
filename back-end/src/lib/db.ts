@@ -29,10 +29,9 @@ const createDb = (db = getConnection()) => {
                   FROM bookings
                   WHERE booking_date = $<date>;
                   `;
-      const result = await db.any(query, {date});
-      return result;
+      return await db.any(query, {date});
     },
-    postBookings: async function getBookings(
+    postBookings: async function postBookings(
       seatId,
       date,
       name,
@@ -41,8 +40,16 @@ const createDb = (db = getConnection()) => {
       const query = `
                     INSERT INTO bookings VALUES ($<seatId>, $<date>, $<name>, $<state>);
                     `;
-      const result = await db.any(query, {seatId, date, name, state});
-      return result;
+      return await db.any(query, {seatId, date, name, state});
+    },
+    removeBookings: async function removeBookings(seatId, date): Promise<any> {
+      const query = `
+                    DELETE FROM bookings
+                    WHERE seat_id = $<seatId>
+                    AND booking_date = $<date>
+                    ;
+                    `;
+      return await db.any(query, {seatId, date});
     },
   };
 };

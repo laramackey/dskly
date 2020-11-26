@@ -9,6 +9,7 @@ export default async function postHandler(ctx) {
   }
 
   // Implement updating one booking at a time first
+  // TODO add ability to do multiple inserts/ deletes at once
   if (postRequest.bookings.length > 1) {
     respond400(ctx, 'Can only book one date at a time currently :(');
   }
@@ -17,25 +18,38 @@ export default async function postHandler(ctx) {
   }
   const bookingDate = postRequest.bookings[0].date;
   const seatId = postRequest.bookings[0].seats[0].id;
-  const name = postRequest.bookings[0].seats[0].name;
+  const name = postRequest.bookings[0].seats[0].name || '';
   const state = postRequest.bookings[0].seats[0].state;
-  try {
-    await ctx.state.db.postBookings(seatId, bookingDate, name, state);
 
-    ctx.body = postRequest;
-    ctx.status = 201;
-  } catch (err) {
-    // pgp error code 23505
-    if (err.detail.includes('already exists')) {
-      respond400(
-        ctx,
-        `Booking exists for seat ${seatId} on date ${bookingDate}`
-      );
-    } else {
+  if (state === '0') {
+    try {
+      await ctx.state.db.removeBookings(seatId, bookingDate);
+      ctx.body = postRequest;
+      ctx.status = 201;
+    } catch (err) {
       ctx.body = `DB error: ${err.detail}`;
       ctx.status = 500;
+      return;
     }
-    return;
+  }
+  if (['1', '2'].includes(state)) {
+    try {
+      await ctx.state.db.postBookings(seatId, bookingDate, name, state);
+      ctx.body = postRequest;
+      ctx.status = 201;
+    } catch (err) {
+      // pgp error code 23505
+      if (err.detail.includes('already exists')) {
+        respond400(
+          ctx,
+          `Booking exists for seat ${seatId} on date ${bookingDate}`
+        );
+      } else {
+        ctx.body = `DB error: ${err.detail}`;
+        ctx.status = 500;
+      }
+      return;
+    }
   }
 }
 
@@ -64,11 +78,14 @@ const validateRequestBody = (postRequest) => {
 };
 
 const validateBooking = (seats) => {
-  if (!['id', 'state', 'name'].every((key) => seats.hasOwnProperty(key))) {
-    return [false, 'Must have id, state, and name in booking request'];
+  if (!['id', 'state'].every((key) => seats.hasOwnProperty(key))) {
+    return [false, 'Must have seat id and state in booking request'];
   }
   if (!(seats.state in ['0', '1', '2'])) {
     return [false, 'Must be a valid state: 0, 1 or 2'];
+  }
+  if (!(seats.state === 1 && !seats.hasOwnProperty('name'))) {
+    return [false, 'Name must be included in booking'];
   }
   return [true, ''];
 };
