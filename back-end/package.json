@@ -1,0 +1,33 @@
+{
+    "name": "dskly",
+    "version": "1.0.0",
+    "description": "Desk booking app back end",
+    "main": "index.js",
+    "prettier": "ampify-prettier-config",
+    "repository": "https://github.com/Focusrite-Novation/dskly.git",
+    "scripts": {
+        "start": "node ./index.js",
+        "build": "npm run lint && tsc",
+        "lint": "tslint -c tslint.json 'src/**/*.ts'",
+        "format": "prettier --write './src/**/*.ts'"
+    },
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+        "@koa/router": "^8.0.8",
+        "koa": "^2.13.0",
+        "koa-body-parser": "^1.1.2",
+        "pg": "^7.11.0",
+        "pg-promise": "^8.7.2"
+    },
+    "devDependencies": {
+        "@types/koa": "^2.11.4",
+        "@types/koa__router": "^8.0.3",
+        "@types/node": "^12.12.54",
+        "ampify-prettier-config": "https://github.com/Focusrite-Novation/ampify-prettier-config.git",
+        "ampify-tslint-config": "git+https://github.com/Focusrite-Novation/ampify-tslint-config.git",
+        "prettier": "^1.19.1",
+        "tslint": "^5.20.0",
+        "typescript": "^3.9.7"
+    }
+}
