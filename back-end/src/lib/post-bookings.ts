@@ -23,11 +23,11 @@ export default async function postHandler(ctx) {
     respond400(ctx, 'Can only book one seat at a time currently :(');
   }
   const bookingDate = postRequest.bookings[0].date;
-  const seatId = postRequest.bookings[0].seats[0].id;
+  const seatId = parseInt(postRequest.bookings[0].seats[0].id, 10);
   const name = postRequest.bookings[0].seats[0].name || '';
-  const state = postRequest.bookings[0].seats[0].state;
+  const state = parseInt(postRequest.bookings[0].seats[0].state, 10);
 
-  if (state === '0') {
+  if (state === 0) {
     try {
       await ctx.state.db.removeBookings(seatId, bookingDate);
       ctx.body = postRequest;
@@ -38,7 +38,7 @@ export default async function postHandler(ctx) {
       return;
     }
   }
-  if (['1', '2'].includes(state)) {
+  if ([1, 2].includes(state)) {
     try {
       await ctx.state.db.postBookings(seatId, bookingDate, name, state);
       ctx.body = postRequest;
@@ -87,7 +87,7 @@ const validateBooking = (seats) => {
   if (!['id', 'state'].every((key) => seats.hasOwnProperty(key))) {
     return [false, 'Must have seat id and state in booking request'];
   }
-  if (!(seats.state in ['0', '1', '2'])) {
+  if (!(parseInt(seats.state, 10) in [0, 1, 2])) {
     return [false, 'Must be a valid state: 0, 1 or 2'];
   }
   if (!(seats.state === 1 && !seats.hasOwnProperty('name'))) {
