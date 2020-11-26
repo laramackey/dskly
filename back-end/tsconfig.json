@@ -1,0 +1,12 @@
+{
+    "compilerOptions": {
+        "resolveJsonModule": true,
+        "module": "commonjs",
+        "outDir": "./dist",
+        "target": "es2019",
+        "strictBindCallApply": true
+    },
+    "include": [
+        "./src/**/*"
+    ]
+}

@@ -19,7 +19,7 @@ services:
     networks:
       - bookings
     working_dir: /app
-    image: node:12.18.4-alpine AS base
+    image: dskly
     command: npm start
     ports:
       - 8080:8080
