@@ -1,9 +1,37 @@
 <script>
+import { apiUrl } from '../stores';
 import Modal from './Modal.svelte';
 
 export let open;
 export let chosenSeat;
 export let chosenDate;
+
+let name;
+
+const handleSubmit = async () => {
+  // submit form to server
+  try {
+    const data = {
+      bookings: [{ date: chosenDate, seats: [{id: chosenSeat, name: name, state: 1}]}]
+    }
+
+    const response = await fetch(
+      $apiUrl + '/bookings',
+      {
+        method: 'POST',
+        // mode: 'no-cors',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+      }
+    );
+
+  } catch (error){
+    console.error(error);
+  }
+
+}
 
 </script>
 
@@ -33,8 +61,8 @@ export let chosenDate;
   }
 </style>
 
-<Modal {open} {chosenSeat} {chosenDate}>
+<Modal on:close-modal {open} {chosenSeat} {chosenDate}>
   <label for='name'>Name</label>
-  <input id='name' type='text' />
-  <div><button>Book</button></div>
+  <input id='name' bind:value={name} type='text' />
+  <div><button on:click={handleSubmit}>Book</button></div>
 </Modal>

@@ -1,7 +1,13 @@
 import {validDate} from './helpers';
 
 export default async function postHandler(ctx) {
-  const postRequest = ctx.request.body;
+  let postRequest = ctx.request.body;
+
+  // tslint:disable: no-console
+  if (typeof postRequest === 'string') {
+    postRequest = JSON.parse(postRequest);
+  }
+
   const [isValid, reason] = validateRequestBody(postRequest);
   if (!isValid) {
     respond400(ctx, reason);
