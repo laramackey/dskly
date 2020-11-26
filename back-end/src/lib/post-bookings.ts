@@ -1,4 +1,3 @@
-import {createContext} from 'vm';
 import {validDate} from './helpers';
 
 export default async function postHandler(ctx) {
@@ -26,8 +25,17 @@ export default async function postHandler(ctx) {
     ctx.body = postRequest;
     ctx.status = 201;
   } catch (err) {
-    // tslint:disable-next-line: no-console
-    console.log(err);
+    // pgp error code 23505
+    if (err.detail.includes('already exists')) {
+      respond400(
+        ctx,
+        `Booking exists for seat ${seatId} on date ${bookingDate}`
+      );
+    } else {
+      ctx.body = `DB error: ${err.detail}`;
+      ctx.status = 500;
+    }
+    return;
   }
 }
 
