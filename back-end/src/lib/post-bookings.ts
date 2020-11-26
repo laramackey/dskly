@@ -3,33 +3,57 @@ import {validDate} from './helpers';
 
 export default async function postHandler(ctx) {
   const postRequest = ctx.request.body;
-  if (!postRequest.hasOwnProperty('bookings')) {
-    respond400(ctx, 'Must send bookings object with booking request');
+  const [isValid, reason] = validateRequestBody(postRequest);
+  if (!isValid) {
+    respond400(ctx, reason);
     return;
+  }
+
+  // Implement updating one booking at a time first
+  if (postRequest.bookings.length > 1) {
+    respond400(ctx, 'Can only book one date at a time currently :(');
+  }
+  if (postRequest.bookings[0].seats.length > 1) {
+    respond400(ctx, 'Can only book one seat at a time currently :(');
+  }
+  const bookingDate = postRequest.bookings[0].date;
+  const seatId = postRequest.bookings[0].seats[0].id;
+  const name = postRequest.bookings[0].seats[0].name;
+  const state = postRequest.bookings[0].seats[0].state;
+  try {
+    await ctx.state.db.postBookings(seatId, bookingDate, name, state);
+
+    ctx.body = postRequest;
+    ctx.status = 201;
+  } catch (err) {
+    // tslint:disable-next-line: no-console
+    console.log(err);
+  }
+}
+
+const validateRequestBody = (postRequest) => {
+  if (!postRequest.hasOwnProperty('bookings')) {
+    return [false, 'Must send bookings object with booking request'];
   }
   postRequest.bookings.forEach((booking) => {
     if (!booking.hasOwnProperty('seats')) {
-      respond400(ctx, 'Must send seats with booking request');
-      return;
+      return [false, 'Must send seats with booking request'];
     }
     if (!validDate((booking as any).date)) {
-      respond400(
-        ctx,
-        `Invalid date ${(booking as any).date}, must be in YYYY-MM-DD`
-      );
-      return;
+      return [
+        false,
+        `Invalid date ${(booking as any).date}, must be in YYYY-MM-DD`,
+      ];
     }
     booking.seats.forEach((seat) => {
       const [isValid, reason] = validateBooking(seat);
       if (!isValid) {
-        respond400(ctx, `Invalid booking: ${reason}`);
-        return;
+        return [false, `Invalid booking: ${reason}`];
       }
     });
   });
-  ctx.body = 'success';
-  ctx.status = 201;
-}
+  return [true, ''];
+};
 
 const validateBooking = (seats) => {
   if (!['id', 'state', 'name'].every((key) => seats.hasOwnProperty(key))) {

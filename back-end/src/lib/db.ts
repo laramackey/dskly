@@ -32,5 +32,17 @@ const createDb = (db = getConnection()) => {
       const result = await db.any(query, {date});
       return result;
     },
+    postBookings: async function getBookings(
+      seatId,
+      date,
+      name,
+      state
+    ): Promise<any> {
+      const query = `
+                    INSERT INTO bookings VALUES ($<seatId>, $<date>, $<name>, $<state>);
+                    `;
+      const result = await db.any(query, {seatId, date, name, state});
+      return result;
+    },
   };
 };
