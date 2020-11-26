@@ -7,12 +7,20 @@ export default async function getHandler(ctx) {
     ctx.status = 404;
     return;
   }
-  const bookings = await ctx.state.db.getBookings(date);
+  const seats = await ctx.state.db.getBookings(date);
+  const countBooked = seats.reduce((n, seat) => {
+    return n + (seat.state === 1);
+  }, 0);
+  const countBlocked = seats.reduce((n, seat) => {
+    return n + (seat.state === 2);
+  }, 0);
   ctx.body = {
     bookings: [
       {
         date,
-        seats: bookings,
+        seats,
+        countBooked,
+        countBlocked,
       },
     ],
   };
