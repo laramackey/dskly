@@ -5,8 +5,10 @@ import * as Router from '@koa/router';
 const router = new Router();
 import {addDb} from './db';
 import getHandler from './get-bookings';
+import postHandler from './post-bookings';
 
 router.get('/bookings', getHandler);
+router.post('/bookings', postHandler);
 
 export default () => {
   app.use(bodyParser());

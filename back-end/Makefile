@@ -5,5 +5,5 @@ kill:
 build: kill
 	docker-compose build
 
-run: 
+run: build
 	docker-compose up
