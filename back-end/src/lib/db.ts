@@ -30,8 +30,6 @@ const createDb = (db = getConnection()) => {
                   WHERE booking_date = $<date>;
                   `;
       const result = await db.any(query, {date});
-      // tslint:disable-next-line: no-console
-      console.log(result);
       return result;
     },
   };
